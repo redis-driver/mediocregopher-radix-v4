@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/mediocregopher/radix/v4"
 	"errors"
+	redScript "github.com/redis-driver/script"
 	"log"
 	"strings"
 )
@@ -35,12 +36,7 @@ func (c Client) RedisCommand(ctx context.Context, valuePtr interface{}, args []s
 	return
 }
 
-func (c Client)  RedisScript (ctx context.Context, script struct {
-	ValuePtr interface{}
-	Script string
-	Keys []string
-	Args []string
-}) (result struct { IsNil bool }, err error){
+func (c Client)  RedisScript (ctx context.Context, script redScript.Script) (result struct { IsNil bool }, err error){
 	data := radix.Maybe{Rcv: script.ValuePtr}
 	err = c.Core. Do(ctx, radix.NewEvalScript(script.Script).Cmd(&data, script.Keys, script.Args...)) ; if err != nil {
 		return
