@@ -24,12 +24,12 @@ func (c *Client) logDebug(cmd []string) {
 		log.Print("goclub/redis:(debug) exec: ", strings.Join(cmd, " "))
 	}
 }
-func (c Client) RedisCommand(ctx context.Context, valuePtr interface{}, args []string) (result struct { IsNil bool }, err error){
-	c.logDebug(args)
+func (c Client) RedisCommand(ctx context.Context, valuePtr interface{}, argv []string) (result struct { IsNil bool }, err error){
+	c.logDebug(argv)
 	data := radix.Maybe{Rcv: valuePtr}
 	var moreArg []string
-	if len(args) >1 { moreArg = args[1:] }
-	err = c.Core.Do(ctx, radix.Cmd(&data, args[0], moreArg...)) ; if err != nil {
+	if len(argv) >1 { moreArg = argv[1:] }
+	err = c.Core.Do(ctx, radix.Cmd(&data, argv[0], moreArg...)) ; if err != nil {
 		return
 	}
 	result.IsNil = data.Null
@@ -37,7 +37,7 @@ func (c Client) RedisCommand(ctx context.Context, valuePtr interface{}, args []s
 }
 
 func (c Client)  RedisScript (ctx context.Context, script redScript.Script) (err error){
-	err = c.Core. Do(ctx, radix.NewEvalScript(script.Script).Cmd(script.ValuePtr, script.Keys, script.Args...)) ; if err != nil {
+	err = c.Core. Do(ctx, radix.NewEvalScript(script.Script).Cmd(script.ValuePtr, script.Keys, script.Argv...)) ; if err != nil {
 		return
 	}
 	return
